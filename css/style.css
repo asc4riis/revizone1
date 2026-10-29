@@ -1,0 +1,2553 @@
+/* ==========================================================================
+   Revizone - feuille de style principale (version web)
+   ========================================================================== */
+
+/* --- Variables ---
+   La DA du site (navigation, boutons...) est violette : une couleur qu'aucune des 4 facultés
+   n'utilise (rouge, jaune, bleu, vert). Les écrans d'une faculté prennent la couleur de la faculté. */
+:root {
+  color-scheme: light;
+  --color-primary: #7b3fbf;      /* violet */
+  --color-secondary: #4b2a8a;    /* violet foncé : textes et traits d'accent */
+  --color-strong: #4b2a8a;       /* fonds pleins sous un texte blanc (onglet actif, survol des boutons) */
+  --color-accent: #a77be0;       /* violet clair */
+  --color-bg: #fbfaf8;
+  --color-surface: #ffffff;
+  --color-text: #1d1d24;
+  --color-muted: #6b6b78;
+  --color-border: #e6dcf4;
+  --window-bg: rgba(255, 255, 255, 0.78); /* fenêtres des semestres posées sur la photo */
+  --shelf-img: url("../images/assets/02_matiere/shelfes/bibliotheque-vide-clair.webp"); /* étagère des favoris */
+
+  --font-main: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --nav-width: 220px;
+}
+
+/* Thème sombre (Profil > Personnalisation > Thème) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-primary: #9563dc;
+  --color-secondary: #cdb6f5;
+  --color-strong: #6d3bb5;
+  --color-accent: #7d5bb0;
+  --color-bg: #14111b;
+  --color-surface: #1e1a28;
+  --color-text: #ece8f4;
+  --color-muted: #a39db3;
+  --color-border: #362f47;
+  --window-bg: rgba(30, 26, 40, 0.8);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Reset de base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* --- Mise en page générale --- */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem;
+}
+
+/* --- Menu de navigation (à gauche en version web) --- */
+.nav {
+  width: var(--nav-width);
+  padding: 1.5rem 1rem;
+  background: var(--color-surface);
+  border-right: 2px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav__logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
+.nav__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  color: var(--color-secondary);
+  transition: background 0.15s;
+}
+
+.nav__item:hover {
+  background: var(--color-border);
+}
+
+.nav__item--active {
+  background: var(--color-strong);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* L'icône de l'onglet actif est pleine, comme dans le prototype */
+.nav__item--active .nav__icon {
+  fill: currentColor;
+}
+
+.nav__item--active .nav__icon circle + path {
+  fill: none;
+}
+
+/* --- Boutons --- */
+.btn {
+  padding: 0.6rem 1.4rem;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* --- Cartes (facultés, semestres, matières...) --- */
+.card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* --- Carte du campus (écran d'accueil) --- */
+.campus-map {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 1452 / 892;
+  margin-top: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* la loupe des sciences pointe en dehors de la carte */
+  container-type: inline-size; /* les loupes se dimensionnent d'après la largeur de la carte */
+}
+
+.campus-map__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Loupe : un grand rond avec la photo de la faculté, centré sur (left/top).
+   Il recouvre ou jouxte le bâtiment associé. */
+.lens {
+  --lens-color: var(--color-primary);
+  --lens-size: clamp(64px, 21cqw, 230px);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.lens:hover,
+.lens:focus-visible {
+  transform: translate(-50%, -50%) scale(1.3);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+  outline: none;
+  z-index: 1;
+}
+
+.lens__disc {
+  position: relative;
+  display: block;
+  width: var(--lens-size);
+  height: var(--lens-size);
+  border-radius: 50%;
+  border: calc(var(--lens-size) * 0.04) solid var(--lens-color);
+  background: #fff;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+/* La photo est dessous, révélée quand le logo s'ouvre */
+.lens__photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Le logo est coupé en deux moitiés (haut / bas) qui s'écartent au survol.
+   Chaque moitié affiche sa part du logo, centré et large de 60 % du rond. */
+.lens__half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: calc(50% + 1px); /* léger recouvrement : évite un trait entre les deux moitiés */
+  background-color: #fff;
+  background-image: var(--lens-logo);
+  background-repeat: no-repeat;
+  background-size: 60% 120%;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.lens__half--top {
+  top: 0;
+  background-position: 50% -200%;
+}
+
+.lens__half--bottom {
+  bottom: 0;
+  background-position: 50% 300%;
+}
+
+.lens:hover .lens__half--top,
+.lens:focus-visible .lens__half--top {
+  transform: translateY(-100%);
+}
+
+.lens:hover .lens__half--bottom,
+.lens:focus-visible .lens__half--bottom {
+  transform: translateY(100%);
+}
+
+/* Variante : une pointe part vers le haut, hors de la carte (faculté éloignée). */
+.lens--up::after {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: calc(var(--lens-size) * 0.12) solid transparent;
+  border-right: calc(var(--lens-size) * 0.12) solid transparent;
+  border-bottom: calc(var(--lens-size) * 0.3) solid var(--lens-color);
+}
+
+.lens__label {
+  /* Le nom est sous le rond (au-dessus pour les ronds du bas, voir .lens--label-top),
+     sur plusieurs lignes si besoin pour rester dans la carte. */
+  position: absolute;
+  top: calc(100% + 0.5em);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(var(--lens-size) * 0.95);
+  padding: 0.3em 0.7em;
+  border-radius: 0.7em;
+  background: var(--lens-color);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-size: clamp(8px, calc(var(--lens-size) * 0.065), 15px);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s 0.2s; /* apparaît quand le logo s'est ouvert */
+}
+
+.lens--label-top .lens__label {
+  top: auto;
+  bottom: calc(100% + 0.5em);
+}
+
+.lens:hover .lens__label,
+.lens:focus-visible .lens__label {
+  opacity: 1;
+}
+
+/* --- Semestres d'une faculté (couloir avec une porte par semestre) --- */
+.semestres {
+  --fac-color: var(--color-primary);
+  max-width: 760px;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 0.5rem 0 1rem;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.semestres__title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+}
+
+.semestres__logo {
+  width: 48px;
+  height: 48px;
+}
+
+/* Photo de la faculté (rectangle classique) avec les 6 semestres posés dessus,
+   en bas de l'image, sur un léger dégradé sombre pour la lisibilité. */
+.fac-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  container-type: inline-size; /* le texte des boutons suit la largeur de la photo */
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.fac-photo__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fac-photo__semestres {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3cqi;
+  padding: 12cqi 5cqi 4.5cqi;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0));
+}
+
+/* Une colonne par année : le titre, puis ses deux semestres l'un sous l'autre */
+.annee {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8cqi;
+}
+
+/* Titre de l'année sur une pastille sombre, lisible quelle que soit la photo */
+.annee__titre {
+  align-self: center;
+  padding: 0.2em 0.8em;
+  border-radius: 999px;
+  background: rgba(20, 15, 30, 0.7);
+  color: #fff;
+  font-size: clamp(0.85rem, 2.4cqi, 1.2rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.annee__titre sup {
+  font-size: 0.6em;
+}
+
+/* Bouton opaque d'un semestre */
+.semestre-btn {
+  padding: 0.55em 0.9em;
+  border: 3px solid var(--fac-color);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  color: #1d1d24;
+  font-size: clamp(0.8rem, 2.3cqi, 1.15rem);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.semestre-btn sup {
+  font-size: 0.6em;
+}
+
+.semestre-btn:hover,
+.semestre-btn:focus-visible {
+  background: var(--fac-color);
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+  outline: none;
+}
+
+/* --- Étagère des matières --- */
+.matieres {
+  --fac-color: var(--color-primary); /* remplacée par la couleur de la faculté */
+  max-width: 680px;
+}
+
+.matieres__title {
+  margin: 0 0 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* Retour à gauche, Personnalisation à droite */
+.matieres__haut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.matieres .deco-bandeau {
+  margin-top: -0.75rem;
+}
+
+/* Étagère : l'image de la bibliothèque (claire ou noyer, voir Personnalisation),
+   les livres par-dessus (image transparente de même taille), puis les 5 matières.
+   Les images font 1680 × 1530 px ; les rangées sont placées en % de cette hauteur. */
+.shelf {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1680 / 1530;
+  container-type: inline-size; /* le texte des matières suit la largeur de l'étagère */
+  background: url("../images/assets/02_matiere/shelfes/bibliotheque-vide-clair.webp") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+}
+
+:root[data-bibliotheque="sombre"] .shelf {
+  background-image: url("../images/assets/02_matiere/shelfes/bibliotheque-vide-noyer.webp");
+}
+
+:root[data-bibliotheque="sombre"] {
+  --shelf-img: url("../images/assets/02_matiere/shelfes/bibliotheque-vide-noyer.webp");
+}
+
+/* L'image des livres (une par faculté) est posée par le JS */
+/* Livres d'un étage : l'image entière, découpée entre deux planches
+   (y = 0, 316, 616, 917, 1217, 1530 sur 1530 px) */
+.shelf__books {
+  position: absolute;
+  inset: 0;
+  background: center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.shelf__books[data-etage="1"] { clip-path: inset(0 0 79.35% 0); }
+.shelf__books[data-etage="2"] { clip-path: inset(20.65% 0 59.74% 0); }
+.shelf__books[data-etage="3"] { clip-path: inset(40.26% 0 40.07% 0); }
+.shelf__books[data-etage="4"] { clip-path: inset(59.93% 0 20.46% 0); }
+.shelf__books[data-etage="5"] { clip-path: inset(79.54% 0 0 0); }
+
+/* Décoration d'un étage (image 1632 × 278 posée sur la planche, voir Favoris) :
+   x = 24 / 1680 ; y = 25, 325, 626, 926, 1226 sur 1530 ; hauteur = 278 / 1530 */
+.shelf__deco {
+  position: absolute;
+  left: 1.43%;
+  width: 97.14%;
+  height: 18.17%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.shelf__deco[data-etage="1"] { top: 1.63%; }
+.shelf__deco[data-etage="2"] { top: 21.24%; }
+.shelf__deco[data-etage="3"] { top: 40.92%; }
+.shelf__deco[data-etage="4"] { top: 60.52%; }
+.shelf__deco[data-etage="5"] { top: 80.13%; }
+
+/* Un compartiment par matière ; le nom se place au milieu, entre les deux piles de livres
+   (les flèches du mode décoration, elles, vont aux bords de l'étagère) */
+.shelf__row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+}
+
+.shelf__row .shelf__label {
+  max-width: 44%;
+}
+
+.shelf__row[data-etage="1"] { top: 3.3%;  height: 16.3%; }
+.shelf__row[data-etage="2"] { top: 21.6%; height: 17.6%; }
+.shelf__row[data-etage="3"] { top: 41.2%; height: 17.6%; }
+.shelf__row[data-etage="4"] { top: 60.8%; height: 17%; }
+.shelf__row[data-etage="5"] { top: 80.4%; height: 17%; }
+
+.shelf--deco .shelf__label:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+/* Plaque avec le nom de la matière, lisible sur les deux bibliothèques */
+.shelf__label {
+  max-width: 100%;
+  padding: 0.35em 0.9em;
+  border: 2px solid var(--fac-color);
+  border-radius: 0.6em;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  color: #1d1d24;
+  font-size: clamp(0.8rem, 2.6cqi, 1.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.shelf__label:hover,
+.shelf__label:focus-visible {
+  background: var(--fac-color);
+  color: #fff;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* --- Onglet Favoris --- */
+.favoris {
+  max-width: 680px;
+}
+
+.favoris__titre {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.favoris__intro,
+.favoris__vide {
+  margin: 0.25rem 0 1rem;
+  color: var(--color-muted);
+}
+
+/* Bibliothèque à hauteur variable : une rangée par catégorie, découpée dans l'image
+   de la bibliothèque (1680 × 1530 px). Chaque tranche garde la largeur de l'image :
+   background-size = 100% × (1530 / hauteur de la tranche), position = y / (1530 − hauteur). */
+.fav-shelf {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.25));
+}
+
+.fav-shelf__row,
+.fav-shelf__bottom {
+  background-image: var(--shelf-img);
+  background-repeat: no-repeat;
+}
+
+.fav-shelf__row {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1680 / 300;
+  container-type: inline-size; /* le texte des plaques suit la largeur de l'étagère */
+  background-size: 100% 510%;          /* tranche y = 325 → 625 (2e compartiment) */
+  background-position: 0 26.42%;
+}
+
+.fav-shelf__row--first {
+  aspect-ratio: 1680 / 325;
+  background-size: 100% 470.77%;       /* tranche y = 0 → 325 (cadre du haut + 1er compartiment) */
+  background-position: 0 0;
+}
+
+.fav-shelf__bottom {
+  aspect-ratio: 1680 / 40;
+  background-size: 100% 3825%;         /* tranche y = 1490 → 1530 (bas du cadre) */
+  background-position: 0 100%;
+}
+
+/* Livres de la couleur de la catégorie (image posée par le JS), mêmes tranches */
+.fav-shelf__books {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: inherit;
+  background-position: 0 26.42%;
+  pointer-events: none;
+}
+
+.fav-shelf__row--first .fav-shelf__books {
+  background-position: 0 0;
+}
+
+/* Décoration à la place des livres (image 1632 × 278 posée sur la planche) :
+   x = 24 / 1680, largeur = 1632 / 1680 ; 1re rangée : y = 25 / 325, hauteur = 278 / 325 ;
+   rangées suivantes : y = 0, hauteur = 278 / 300 */
+.fav-shelf__deco {
+  position: absolute;
+  left: 1.43%;
+  top: 0;
+  width: 97.14%;
+  height: 92.67%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.fav-shelf__row--first .fav-shelf__deco {
+  top: 7.69%;
+  height: 85.54%;
+}
+
+/* --- Mode décoration --- */
+.favoris--deco .toolbar,
+.favoris--deco .favoris__intro {
+  display: none;
+}
+
+.deco-bandeau {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.deco-bandeau__texte {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 14rem;
+  gap: 0.15rem;
+}
+
+.deco-bandeau__texte span {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.deco-bandeau .upload__error {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.coins--fixe {
+  cursor: default;
+}
+
+/* Décoration encore verrouillée : aperçu estompé */
+.deco--verrouille .fav-shelf__deco,
+.deco--verrouille .fav-shelf__books,
+.shelf__deco.deco--verrouille,
+.shelf__books.deco--verrouille {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+/* Flèches de chaque côté de l'étage */
+.deco-fleche {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: clamp(28px, 6cqi, 40px);
+  height: clamp(28px, 6cqi, 40px);
+  padding: 0;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-50%);
+  transition: background 0.15s, color 0.15s;
+}
+
+.deco-fleche--gauche { left: 3.5%; }
+.deco-fleche--droite { right: 3.5%; }
+
+.deco-fleche:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.deco-fleche svg {
+  width: 60%;
+  height: 60%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Cadenas + prix, au centre de l'étage, à la place de la plaque */
+.deco-cadenas {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.6rem;
+  border: 2px solid #e0b100;
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: clamp(0.8rem, 2.4cqi, 1rem);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.deco-cadenas:hover {
+  background: color-mix(in srgb, #f5c542 30%, var(--color-surface));
+}
+
+.deco-cadenas > svg {
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.deco-cadenas .coin {
+  width: 1.4em;
+  height: 1.4em;
+  font-size: 0.75em;
+}
+
+.deco-ouvrir {
+  margin-top: 1rem;
+}
+
+.fav-shelf__row .shelf__label {
+  position: relative;
+  max-width: 44%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.fav-shelf__n {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+/* Fenêtre « Ajouter aux favoris » */
+.fav-dialog__doc {
+  margin: -0.25rem 0 1rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.fav-choix {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.fav-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.fav-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.fav-option:has(input:checked) {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+}
+
+.fav-option input {
+  accent-color: var(--color-primary);
+}
+
+.fav-option__dot {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.fav-option__dot--plus {
+  display: none;
+}
+
+.fav-option__nom {
+  flex: 1;
+  font-weight: 600;
+}
+
+.fav-option__n {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.fav-new {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.fav-new__couleur-label {
+  margin-top: 0.5rem;
+}
+
+.color-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.color-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.4rem;
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Pastille de couleur à la place du rond du bouton radio */
+.color-choice input {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+}
+
+.color-choice:has(input:checked) {
+  border-color: var(--swatch);
+  box-shadow: 0 0 0 2px var(--swatch);
+}
+
+.color-choice:has(input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* --- Documents d'une matière (classés par likes) --- */
+.documents {
+  --fac-color: var(--color-primary); /* remplacée par la couleur de la faculté */
+  max-width: 640px;
+}
+
+.documents__title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.documents__subtitle {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--color-muted);
+}
+
+/* « Modifier la catégorie », au-dessus du livre, dans la couleur de la catégorie */
+#favoris-cat-vue .toolbar {
+  margin-bottom: 0.75rem;
+}
+
+.btn--categorie {
+  border-color: var(--fac-color);
+  color: var(--color-text);
+}
+
+.btn--categorie:hover {
+  background: var(--fac-color);
+  color: #fff;
+}
+
+.doc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Une ligne de document : le titre à gauche et l'auteur à droite, toujours,
+   quelle que soit la longueur du titre ; les étoiles juste sous le titre
+   (sur toute la largeur, pour ne jamais passer sous l'auteur). */
+.doc {
+  display: grid;
+  /* Colonne auteur de largeur fixe : les photos de profil sont alignées d'une ligne à l'autre */
+  grid-template-columns: minmax(0, 1fr) 10.5rem;
+  grid-template-areas:
+    "title  author"
+    "rating fav";
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.6rem 0.25rem;
+  border-bottom: 3px solid var(--fac-color);
+}
+
+/* Page de livre en fond de la liste (images d'environ 2080 × 2400 px).
+   Le cadre intérieur de l'image est décalé vers la gauche (marque-page à droite) :
+   les marges sont inversées quand la page est retournée en miroir. */
+.book-page {
+  position: relative;
+  aspect-ratio: 2080 / 2400; /* hauteur minimale ; la page s'allonge si le contenu dépasse */
+  padding: 9% 17% 12% 12%;
+  /* La page reste claire même en thème sombre : couleurs de texte « encre sur papier » */
+  --color-text: #2b2620;
+  --color-muted: #6b5f50;
+  --color-surface: #fbf6ea;
+  color: var(--color-text);
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+}
+
+.book-page--miroir {
+  padding: 9% 12% 12% 17%;
+}
+
+.book-page__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: center / 100% 100% no-repeat;
+}
+
+.book-page--miroir .book-page__bg {
+  transform: scaleX(-1);
+}
+
+.book-page .doc:last-child {
+  border-bottom: 0;
+}
+
+/* Animation de page tournée (sens de lecture) */
+.book-page--tourne-avant  { animation: tourne-avant 0.45s ease-out; }
+.book-page--tourne-arriere { animation: tourne-arriere 0.45s ease-out; }
+
+@keyframes tourne-avant {
+  from { transform: perspective(1400px) rotateY(-14deg); transform-origin: left center; opacity: 0.4; }
+  to   { transform: none; transform-origin: left center; opacity: 1; }
+}
+
+@keyframes tourne-arriere {
+  from { transform: perspective(1400px) rotateY(14deg); transform-origin: right center; opacity: 0.4; }
+  to   { transform: none; transform-origin: right center; opacity: 1; }
+}
+
+/* Pagination sous la liste */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.9rem;
+}
+
+.pager__btn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 2px solid var(--fac-color);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: background 0.15s, color 0.15s;
+}
+
+.pager__btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pager__btn:hover:not(:disabled) {
+  background: var(--fac-color);
+  color: #fff;
+}
+
+.pager__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pager__btn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.pager__info {
+  min-width: 6.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Le titre est un bouton : un clic ouvre le résumé dans le lecteur */
+.doc__title {
+  grid-area: title;
+  position: relative;
+  justify-self: start;
+  max-width: 100%;
+  padding: 0 0 0 1.6rem; /* place de l'icône */
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.doc__title svg {
+  position: absolute;
+  top: 0.2rem;
+  left: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: var(--fac-color);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.doc__title:hover .doc__title-texte {
+  text-decoration: underline;
+  text-decoration-color: var(--fac-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.doc__title:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Un titre trop long passe à la ligne (2 lignes au plus, voir la limite dans Ajouter) */
+.doc__title-texte {
+  font-size: 1.1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.doc .rating {
+  grid-area: rating;
+}
+
+/* Signet « favori » sous l'auteur : vide si le résumé n'est pas en favori,
+   plein (couleur de sa catégorie) s'il l'est */
+.doc__fav {
+  grid-area: fav;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.2rem 0.5rem 0.2rem 0.3rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.doc__fav svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.doc__fav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc__fav:hover {
+  border-color: var(--color-muted);
+}
+
+.doc__fav--on {
+  color: var(--color-text);
+}
+
+.doc__fav--on svg {
+  fill: var(--fav-color);
+  stroke: color-mix(in srgb, var(--fav-color) 70%, #000);
+}
+
+.doc__fav:focus-visible {
+  outline: 2px solid var(--color-primary);
+}
+
+/* Auteur : photo à gauche, pseudo et badge l'un sous l'autre */
+.doc__author {
+  grid-area: author;
+  justify-self: start;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "avatar pseudo"
+    "avatar badge";
+  align-items: center;
+  column-gap: 0.55rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.doc__author .doc__avatar { grid-area: avatar; }
+.doc__author .doc__pseudo {
+  grid-area: pseudo;
+  align-self: end;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.doc__author .level-badge { grid-area: badge; justify-self: start; align-self: start; }
+
+.doc__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--fac-color);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fac-color) 12%, var(--color-surface));
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.doc__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.doc__avatar svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Résumé d'un auteur certifié : légèrement mis en avant */
+.doc--certifie {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+/* Notation : moyenne à gauche, 5 étoiles (ma note), nombre de notes à droite */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating__avg {
+  min-width: 2.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.rating__count {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.stars {
+  display: flex;
+  gap: 1px;
+}
+
+.star {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  transition: transform 0.15s;
+}
+
+.star:hover {
+  transform: scale(1.18);
+}
+
+.star:focus-visible {
+  outline: 2px solid var(--color-primary);
+  border-radius: 4px;
+}
+
+/* Étoile vide (contour gris) et, par-dessus, l'étoile jaune coupée à --fill (0, 50 ou 100 %) */
+.star__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #b9b4c6;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.star__fill {
+  fill: #f5b301;
+  stroke: #d99a00;
+  clip-path: inset(0 calc(100% - var(--fill)) 0 0);
+}
+
+/* --- Onglet Ajouter --- */
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 560px;
+  margin-top: 1rem;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 200px;
+  padding: 1.5rem;
+  border: 3px dashed var(--color-accent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--color-primary) 5%, var(--color-surface));
+  color: var(--color-secondary);
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dropzone:hover,
+.dropzone:focus-within,
+.dropzone--over {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+}
+
+.dropzone--filled {
+  border-style: solid;
+}
+
+/* L'input reste accessible au clavier mais invisible */
+.dropzone__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dropzone__icon {
+  width: 48px;
+  height: 48px;
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dropzone__text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.dropzone__hint {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.field select,
+.field input {
+  padding: 0.65rem 0.8rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.field__counter {
+  align-self: flex-end;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.field select:focus,
+.field input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.upload__submit {
+  align-self: flex-start;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.upload__submit:hover:not(:disabled) {
+  background: var(--color-strong);
+  border-color: var(--color-strong);
+}
+
+.upload__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.upload__error {
+  margin: -0.5rem 0 0;
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.upload__success {
+  margin: 0;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+/* --- Onglet Café --- */
+/* La pièce (3200 × 2000 px) en fond, à proportions fixes pour que la tasse reste sur
+   l'ombre de la table : ombre centrée à x = 49,5 %, y = 65,6 %, large de 20 % de l'image.
+   La soucoupe fait 70 % de la largeur de l'image de la tasse, centrée à 86 % de sa hauteur. */
+.cafe {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3200 / 2000;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: url("../images/assets/04_cafe/piece.webp") center / 100% 100% no-repeat;
+  box-shadow: var(--shadow);
+}
+
+.cafe__toolbar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Textes sur un panneau opaque, en bas sur la table */
+.cafe__panneau {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(90%, 420px);
+  padding: 0.75rem 1.25rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transform: translateX(-50%);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Soucoupe (70 % de la tasse) = ombre (20 % de la pièce) → tasse à 28,6 % de la largeur ;
+   hauteur de la tasse : 28,6 % × 1040/1200 × 3200/2000 = 39,6 % de la pièce ;
+   haut = 65,6 % − 86 % × 39,6 % */
+.cup {
+  position: absolute;
+  left: 35.2%;
+  top: 31.5%;
+  width: 28.6%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  cursor: default;
+}
+
+/* Trois images de même taille (1200 × 1040 px, fond transparent) empilées :
+   le café au fond, la tasse en verre par-dessus, puis la fumée. */
+.cup__stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1200 / 1040;
+  transition: transform 0.2s;
+}
+
+.cup__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Le café se dévoile de bas en haut ; le JS règle le haut du découpage selon l'XP */
+.cup__coffee {
+  clip-path: inset(79.6% 0 0 0);
+  transition: clip-path 1s ease;
+}
+
+.cup__steam {
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+/* Tasse pleine : la fumée apparaît et monte doucement, la tasse pulse et devient cliquable */
+.cup--full .cup__steam {
+  opacity: 1;
+  animation: steam 3s ease-in-out infinite;
+}
+
+@keyframes steam {
+  0%, 100% { transform: translateY(2%);  opacity: 0.55; }
+  50%      { transform: translateY(-3%); opacity: 1; }
+}
+
+.cup:enabled {
+  cursor: pointer;
+}
+
+.cup:enabled .cup__stage {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.cup:enabled:hover .cup__stage {
+  animation: none;
+  transform: scale(1.05);
+}
+
+.cup:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 6px;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+.cafe__xp {
+  margin: 0 0 0.5rem;
+  color: var(--color-secondary);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.xp-bar {
+  width: min(100%, 340px);
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.xp-bar__fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  transition: width 1s ease;
+}
+
+.cafe__hint {
+  margin: 0.75rem 0 0;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.cafe__message {
+  margin: 0.5rem 0 0;
+  color: var(--color-secondary);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* --- Fenêtres modales --- */
+.modal {
+  width: calc(100% - 2rem);
+  max-width: 440px;
+  padding: 1.5rem 1.75rem;
+  border: 0;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.modal--wide {
+  max-width: 600px;
+}
+
+.modal::backdrop {
+  background: rgba(30, 15, 50, 0.5);
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: var(--color-secondary);
+}
+
+.modal__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--color-strong);
+  border-color: var(--color-strong);
+}
+
+/* --- Lecteur de résumé (PDF dans le site) ---
+   Tout l'écran à droite du menu ; la page derrière ne défile plus pendant la lecture. */
+.en-lecture,
+.en-lecture body {
+  overflow: hidden;
+}
+
+.lecteur {
+  position: fixed;
+  inset: 0 0 0 var(--nav-width);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  border-top: 6px solid var(--fac-color, var(--color-primary));
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.lecteur__pages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  overflow: auto;
+  background: var(--color-bg);
+  user-select: none;
+}
+
+.lecteur__page {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.lecteur__message {
+  margin: 3rem 0;
+  color: var(--color-muted);
+}
+
+/* Imprimer le site pendant la lecture n'imprime pas le résumé */
+@media print {
+  .lecteur {
+    display: none !important;
+  }
+}
+
+.lecteur__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lecteur__infos {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.lecteur__infos h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lecteur__auteur {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.15rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.lecteur__note {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.lecteur__fermer,
+.rappel__fermer {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid var(--fac-color, var(--color-primary));
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text);
+  transition: background 0.15s, color 0.15s;
+}
+
+.lecteur__fermer:hover,
+.rappel__fermer:hover {
+  background: var(--fac-color, var(--color-primary));
+  color: #fff;
+}
+
+.lecteur__fermer svg,
+.rappel__fermer svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* --- Notification « note ce résumé » (en bas à droite) --- */
+.rappel {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 100;
+  width: min(360px, calc(100% - 2rem));
+  padding: 1rem 1.1rem 1.1rem;
+  border-left: 6px solid var(--fac-color, var(--color-primary));
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  animation: rappel-entree 0.35s ease-out;
+}
+
+@keyframes rappel-entree {
+  from { transform: translateY(1.5rem); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.rappel__fermer {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 30px;
+  height: 30px;
+}
+
+.rappel__fermer svg {
+  width: 15px;
+  height: 15px;
+}
+
+.rappel__titre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 2.2rem 0.35rem 0;
+  font-weight: 700;
+}
+
+.rappel__titre svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--fac-color, var(--color-primary));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.rappel__texte {
+  margin: 0 0 0.6rem;
+  color: var(--color-muted);
+  font-size: 0.92rem;
+}
+
+.admin-xp {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-xp input[type="range"] {
+  flex: 1;
+  accent-color: var(--color-primary);
+}
+
+.admin-xp input[type="number"] {
+  width: 6rem;
+  padding: 0.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.qr {
+  width: 220px;
+  margin: 1rem auto 0.5rem;
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  shape-rendering: crispEdges;
+}
+
+.qr__code {
+  margin: 0;
+  font-family: Consolas, monospace;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.qr__timer {
+  margin: 0.5rem 0 0;
+  text-align: center;
+}
+
+/* --- Badges de niveau (profil et liste des documents) --- */
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.2em 0.7em;
+  border-radius: 999px;
+  background: var(--lb-bg);
+  color: var(--lb-fg);
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.level-badge--sm {
+  padding: 0.1em 0.55em;
+  font-size: 0.72rem;
+}
+
+.level-badge svg {
+  width: 1.1em;
+  height: 1.1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.level-badge--1 { --lb-bg: #eeebf3; --lb-fg: #5b5670; }
+.level-badge--2 { --lb-bg: #f7e4d4; --lb-fg: #8a4b1c; }
+.level-badge--3 { --lb-bg: #e5e9ef; --lb-fg: #47505e; }
+.level-badge--4 { --lb-bg: #fff0bf; --lb-fg: #7a5a00; }
+/* Badge « Certifié » (qualité des notes, pas un niveau d'XP) */
+.level-badge--certifie {
+  --lb-fg: #fff;
+  background: linear-gradient(135deg, var(--color-strong), var(--color-primary) 60%, #b47cf0);
+  box-shadow: 0 1px 6px rgba(123, 63, 191, 0.4);
+}
+
+/* --- Onglet Profil --- */
+.profil {
+  max-width: 640px;
+}
+
+.profil__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+/* Photo de profil : le cadre devient de plus en plus travaillé avec le niveau */
+.avatar {
+  --ring: #cfc9da;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  margin: 1.25rem 0 0.4rem;
+  border: 5px solid var(--ring);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+
+.avatar > img {
+  position: absolute; /* reste dans le cercle quelle que soit la taille de la photo */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar > svg {
+  width: 60%;
+  height: 60%;
+  fill: none;
+  stroke: var(--color-secondary);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.avatar::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Niv. 2 : bronze */
+.avatar--lvl2 { --ring: #b87333; }
+
+/* Niv. 3 : argent, double cercle */
+.avatar--lvl3 { --ring: #9aa3b2; }
+.avatar--lvl3::before { border: 3px solid #c8ced8; }
+
+/* Niv. 4 : or, halo et cercle pointillé */
+.avatar--lvl4 {
+  --ring: #e0a800;
+  box-shadow: 0 0 18px rgba(224, 168, 0, 0.45);
+}
+.avatar--lvl4::before { border: 4px dotted #e0a800; }
+
+/* Niv. 5 « Certifié » : anneau multicolore qui tourne + pastille de certification */
+.avatar--lvl5 {
+  --ring: var(--color-surface);
+  box-shadow: 0 0 26px rgba(123, 63, 191, 0.5);
+}
+.avatar--lvl5::before {
+  inset: -16px;
+  background: conic-gradient(var(--color-primary), #e0a800, #ff6fb5, var(--color-primary));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px));
+  animation: spin 6s linear infinite;
+}
+.avatar--lvl5::after {
+  content: "✓";
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.profil__pseudo {
+  margin: 0.2rem 0 0;
+  font-size: 1.6rem;
+}
+
+.profil__level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: min(100%, 380px);
+}
+
+.profil__level .xp-bar {
+  width: 100%;
+}
+
+.profil__level-text,
+.profil__hint {
+  margin: 0;
+}
+
+.profil__level-text {
+  font-weight: 600;
+}
+
+.profil__hint {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.profil__certif {
+  max-width: 420px;
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--color-border);
+  font-size: 0.9rem;
+}
+
+.profil__certif--ok {
+  background: linear-gradient(135deg, var(--color-strong), var(--color-primary));
+  color: #fff;
+  font-weight: 600;
+}
+
+.admin-notes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.profil__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profil__stats strong {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+/* Menu déroulant « Mes résumés » */
+.my-docs-panel {
+  margin-top: 2rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.my-docs-panel__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  color: var(--color-secondary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.my-docs-panel__summary::-webkit-details-marker {
+  display: none;
+}
+
+.my-docs-panel__summary:hover {
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+}
+
+.my-docs-panel__summary:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: -3px;
+}
+
+.my-docs-panel[open] > .my-docs-panel__summary {
+  border-bottom: 2px solid var(--color-border);
+}
+
+/* La flèche « > » pivote vers le bas quand le menu est ouvert */
+.my-docs-panel__chevron {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+
+.my-docs-panel[open] .my-docs-panel__chevron {
+  transform: rotate(90deg);
+}
+
+.my-docs-panel__count {
+  margin-left: auto;
+  padding: 0.1em 0.6em;
+  border-radius: 999px;
+  background: var(--color-border);
+  font-size: 0.85rem;
+}
+
+.my-docs-search {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.my-docs-search:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.my-docs-panel .profil__empty {
+  margin: 0;
+  padding: 0 1rem 1rem;
+}
+
+.my-docs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Chaque résumé garde un repère de la couleur de sa faculté */
+.my-doc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+  border-left: 5px solid var(--fac-color);
+}
+
+.my-doc__info {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.my-doc__meta {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.my-doc__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.my-doc__rating svg {
+  width: 20px;
+  height: 20px;
+  fill: #f5b301;
+  stroke: #d99a00;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.btn--danger {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.btn--danger:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
+.profil__empty {
+  color: var(--color-muted);
+}
+
+.profil__empty a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* --- Personnalisation (Profil) --- */
+.btn--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.btn--icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.perso__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.perso__header h2 {
+  margin: 0;
+}
+
+/* Compteur de coins (pièce dorée + montant) */
+.coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.8rem 0.3rem 0.35rem;
+  border: 2px solid #e0b100;
+  border-radius: 999px;
+  background: color-mix(in srgb, #f5c542 18%, var(--color-surface));
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.coins:hover {
+  background: color-mix(in srgb, #f5c542 32%, var(--color-surface));
+}
+
+.coins[aria-expanded="true"] {
+  box-shadow: 0 0 0 2px #e0b100;
+}
+
+.coins:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.coin {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #b8860b;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe680, #f5c542 55%, #d49b00);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  color: #7a5300;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.coins-info {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, #e0b100 50%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, #f5c542 14%, var(--color-surface));
+}
+
+.coins-info p {
+  margin: 0 0 0.75rem;
+}
+
+/* Boutons admin (visibles seulement en mode admin) */
+.coins-info__admin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.coins-info__admin .btn[aria-pressed="true"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.modal__input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.modal__input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* Paramètres à gauche, contenu du paramètre choisi à droite */
+.perso {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 1.25rem;
+  min-height: 180px;
+}
+
+.perso__tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-right: 1rem;
+  border-right: 2px solid var(--color-border);
+}
+
+.perso__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.perso__tab svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.perso__tab .perso__chevron {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+}
+
+.perso__tab:hover {
+  background: var(--color-border);
+}
+
+.perso__tab[aria-expanded="true"] {
+  background: var(--color-strong);
+  color: #fff;
+}
+
+.perso__tab:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.perso__placeholder {
+  margin: 0;
+  color: var(--color-muted);
+  align-self: center;
+}
+
+.perso__panel h3 {
+  margin: 0 0 0.75rem;
+}
+
+/* Zéro paramètre (Café) ou un seul (Favoris, matières) : pas de liste à gauche */
+.perso--sans-liste {
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
+.perso--sans-liste .perso__tabs {
+  display: none;
+}
+
+.pseudo-champ {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pseudo-aide {
+  margin: 0.4rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.pseudo-ok {
+  margin: 0.5rem 0 0;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+/* Choix de la photo de profil : vignettes rondes, la photo choisie est entourée */
+.pfp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 0.6rem;
+  max-height: 260px;
+  padding: 4px;
+  overflow-y: auto;
+}
+
+.pfp-option {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface);
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.pfp-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pfp-option svg {
+  width: 55%;
+  height: 55%;
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.pfp-option:hover {
+  transform: scale(1.06);
+  border-color: var(--color-accent);
+}
+
+.pfp-option[aria-checked="true"] {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+
+.pfp-option:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.theme-option:hover {
+  border-color: var(--color-accent);
+}
+
+.theme-option[aria-checked="true"] {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.theme-option:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.theme-option__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Coche visible seulement sur le thème actif */
+.theme-option__label::after {
+  content: "✓";
+  color: var(--color-primary);
+  opacity: 0;
+}
+
+.theme-option[aria-checked="true"] .theme-option__label::after {
+  opacity: 1;
+}
+
+/* Aperçu miniature : fond, barre de navigation, carte et accent violet.
+   Couleurs fixes : l'aperçu montre le thème, quel que soit le thème actif. */
+.theme-preview {
+  display: grid;
+  grid-template-columns: 28% 1fr;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--p-bg);
+  border: 1px solid var(--p-border);
+}
+
+.theme-preview__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 5px;
+  background: var(--p-surface);
+}
+
+.theme-preview__nav::before,
+.theme-preview__nav::after {
+  content: "";
+  height: 6px;
+  border-radius: 3px;
+}
+
+.theme-preview__nav::before { background: var(--p-accent); }
+.theme-preview__nav::after  { background: var(--p-border); }
+
+.theme-preview__card {
+  margin: 8px;
+  border-radius: 5px;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+}
+
+.shelf-preview {
+  display: block;
+  width: 100%;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.theme-preview--light {
+  --p-bg: #fbfaf8; --p-surface: #ffffff; --p-border: #e6dcf4; --p-accent: #4b2a8a;
+}
+
+.theme-preview--dark {
+  --p-bg: #14111b; --p-surface: #1e1a28; --p-border: #362f47; --p-accent: #9563dc;
+}
+
+/* --- Utilitaires --- */
+.hidden {
+  display: none !important;
+}
+
+/* Boutons d'administration : cachés, sauf en mode admin (touches A + D + M + N ensemble) */
+:root:not(.mode-admin) .admin-only {
+  display: none !important;
+}
+
+/* Lu par les lecteurs d'écran, invisible à l'écran */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

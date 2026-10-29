@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revizone - UniNE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="nav__logo" href="#accueil">Revizone</a>
+
+      <a class="nav__item nav__item--active" href="#accueil" data-tab="accueil" aria-current="page">
+        <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3 3 11h2.5v9h5v-6h3v6h5v-9H21z"/>
+        </svg>
+        <span class="nav__label">Accueil</span>
+      </a>
+
+      <a class="nav__item" href="#favoris" data-tab="favoris">
+        <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12v18l-6-4.5L6 21z"/>
+        </svg>
+        <span class="nav__label">Favoris</span>
+      </a>
+
+      <a class="nav__item" href="#ajouter" data-tab="ajouter">
+        <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span class="nav__label">Ajouter</span>
+      </a>
+
+      <a class="nav__item" href="#cafe" data-tab="cafe">
+        <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 10h2a2.5 2.5 0 0 1 0 5h-2M3 21h14"/>
+        </svg>
+        <span class="nav__label">Café</span>
+      </a>
+
+      <a class="nav__item" href="#profil" data-tab="profil">
+        <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+        </svg>
+        <span class="nav__label">Profil</span>
+      </a>
+    </nav>
+
+    <main class="main-content">
+      <!-- Titre de l'onglet : invisible à l'écran, mais annoncé par les lecteurs d'écran -->
+      <h1 class="visually-hidden" id="page-title">Accueil</h1>
+
+      <section class="view" id="view-accueil" data-view="accueil">
+        <div class="campus-map" id="campus-map">
+          <img class="campus-map__img" src="images/uni/plan_vue_dessus.png" alt="Vue aérienne du campus de l'Université de Neuchâtel">
+          <!-- Les loupes sont générées par js/script.js à partir de la liste FACULTES -->
+        </div>
+
+        <!-- Étape 2 : photo de la faculté avec un bouton par semestre -->
+        <div class="semestres hidden" id="accueil-semestres">
+          <a class="back-link" href="#accueil">&larr; Retour à la carte</a>
+          <h2 class="semestres__title">
+            <img class="semestres__logo" id="semestres-logo" src="" alt="">
+            <span id="semestres-nom"></span>
+          </h2>
+
+          <div class="fac-photo">
+            <img class="fac-photo__img" id="semestres-photo" src="" alt="">
+            <!-- Une colonne par année, avec ses deux semestres -->
+            <div class="fac-photo__semestres">
+              <div class="annee" role="group" aria-labelledby="annee-1">
+                <span class="annee__titre" id="annee-1">1<sup>re</sup> année</span>
+                <button class="semestre-btn" type="button" data-semestre="1">1<sup>er</sup> semestre</button>
+                <button class="semestre-btn" type="button" data-semestre="2">2<sup>e</sup> semestre</button>
+              </div>
+              <div class="annee" role="group" aria-labelledby="annee-2">
+                <span class="annee__titre" id="annee-2">2<sup>e</sup> année</span>
+                <button class="semestre-btn" type="button" data-semestre="3">3<sup>e</sup> semestre</button>
+                <button class="semestre-btn" type="button" data-semestre="4">4<sup>e</sup> semestre</button>
+              </div>
+              <div class="annee" role="group" aria-labelledby="annee-3">
+                <span class="annee__titre" id="annee-3">3<sup>e</sup> année</span>
+                <button class="semestre-btn" type="button" data-semestre="5">5<sup>e</sup> semestre</button>
+                <button class="semestre-btn" type="button" data-semestre="6">6<sup>e</sup> semestre</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Étape 3 : l'étagère des matières d'un semestre (rangées générées par js/script.js) -->
+        <div class="matieres hidden" id="accueil-matieres">
+          <div class="matieres__haut">
+            <a class="back-link" id="matieres-retour" href="#accueil">&larr; Retour aux semestres</a>
+            <button class="btn btn--icon perso-btn" type="button" data-onglet="matieres">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+              </svg>
+              Personnalisation
+            </button>
+          </div>
+          <h2 class="matieres__title" id="matieres-titre"></h2>
+          <!-- Mode décoration de l'étagère des matières (même fonctionnement que dans Favoris) -->
+          <div class="deco-bandeau hidden" data-etagere="matieres">
+            <div class="deco-bandeau__texte">
+              <strong>Décoration de la bibliothèque</strong>
+              <span>Change la décoration de chaque étage avec les flèches. Les décorations verrouillées se débloquent avec des coins.</span>
+            </div>
+            <span class="coins coins--fixe" title="Tes coins">
+              <span class="coin" aria-hidden="true">R</span>
+              <span class="deco-coins">0</span>
+              <span class="visually-hidden">coins</span>
+            </span>
+            <button class="btn btn--primary deco-fin" type="button">Terminer</button>
+            <p class="upload__error hidden deco-erreur" role="alert"></p>
+          </div>
+          <div class="shelf" id="shelf"></div>
+        </div>
+
+        <!-- Étape 4 : documents d'une matière, certifiés d'abord puis par note moyenne (lignes générées par js/script.js) -->
+        <div class="documents hidden" id="accueil-documents">
+          <a class="back-link" id="documents-retour" href="#accueil">&larr; Retour à l'étagère</a>
+          <h2 class="documents__title" id="documents-titre"></h2>
+          <p class="documents__subtitle" id="documents-sous-titre"></p>
+          <!-- La liste est posée sur une page de livre (fond changé à chaque page par js/script.js) -->
+          <div class="book-page" id="book-page">
+            <div class="book-page__bg" id="book-page-bg" aria-hidden="true"></div>
+            <ul class="doc-list" id="doc-list"></ul>
+            <nav class="pager hidden" id="doc-pager" aria-label="Pages de documents">
+              <button class="pager__btn" id="doc-pager-prev" type="button" aria-label="Page précédente">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+              </button>
+              <span class="pager__info" id="doc-pager-info" aria-live="polite"></span>
+              <button class="pager__btn" id="doc-pager-next" type="button" aria-label="Page suivante">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <!-- Onglet Favoris : une bibliothèque avec une rangée par catégorie (#favoris),
+           puis la liste des résumés d'une catégorie sur une page de livre (#favoris/<id>) -->
+      <section class="view hidden" id="view-favoris" data-view="favoris">
+        <div class="favoris" id="favoris-etagere-vue">
+          <div class="toolbar">
+            <button class="btn btn--icon" id="fav-new-cat-btn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Nouvelle catégorie
+            </button>
+            <button class="btn btn--icon perso-btn" type="button" data-onglet="favoris">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+              </svg>
+              Personnalisation
+            </button>
+          </div>
+          <h2 class="favoris__titre">Mes favoris</h2>
+          <p class="favoris__intro">Tes résumés favoris, rangés par catégorie. Choisis une étagère pour l'ouvrir.</p>
+          <!-- Mode décoration (Personnalisation > Bibliothèque > Décorer) : des flèches sur chaque étage -->
+          <div class="deco-bandeau hidden" data-etagere="favoris">
+            <div class="deco-bandeau__texte">
+              <strong>Décoration de la bibliothèque</strong>
+              <span>Change la décoration de chaque étage avec les flèches. Les décorations verrouillées se débloquent avec des coins.</span>
+            </div>
+            <span class="coins coins--fixe" title="Tes coins">
+              <span class="coin" aria-hidden="true">R</span>
+              <span class="deco-coins">0</span>
+              <span class="visually-hidden">coins</span>
+            </span>
+            <button class="btn btn--primary deco-fin" type="button">Terminer</button>
+            <p class="upload__error hidden deco-erreur" role="alert"></p>
+          </div>
+          <div class="fav-shelf" id="fav-shelf"></div>
+          <p class="favoris__vide hidden" id="favoris-vide">
+            Tu n'as encore aucun favori. Ouvre la liste des résumés d'une matière et clique sur le signet d'un résumé pour l'ajouter.
+          </p>
+        </div>
+
+        <div class="documents hidden" id="favoris-cat-vue">
+          <a class="back-link" href="#favoris">&larr; Retour aux favoris</a>
+          <h2 class="documents__title" id="favoris-cat-titre"></h2>
+          <p class="documents__subtitle" id="favoris-cat-sous-titre"></p>
+          <div class="toolbar">
+            <button class="btn btn--icon btn--categorie" id="fav-edit-cat-btn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
+              Modifier la catégorie
+            </button>
+          </div>
+          <p class="favoris__vide hidden" id="favoris-cat-vide">Cette catégorie est vide pour l'instant.</p>
+          <div class="book-page" id="fav-book-page">
+            <div class="book-page__bg" id="fav-book-page-bg" aria-hidden="true"></div>
+            <ul class="doc-list" id="fav-doc-list"></ul>
+            <nav class="pager hidden" id="fav-doc-pager" aria-label="Pages de favoris">
+              <button class="pager__btn" id="fav-doc-pager-prev" type="button" aria-label="Page précédente">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+              </button>
+              <span class="pager__info" id="fav-doc-pager-info" aria-live="polite"></span>
+              <button class="pager__btn" id="fav-doc-pager-next" type="button" aria-label="Page suivante">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Onglet Ajouter : dépôt d'un PDF + informations sur le document -->
+      <section class="view hidden" id="view-ajouter" data-view="ajouter">
+        <form class="upload" id="upload-form" novalidate>
+          <label class="dropzone" id="dropzone" for="upload-file">
+            <input class="dropzone__input" type="file" id="upload-file" accept="application/pdf,.pdf">
+            <svg class="dropzone__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"/>
+            </svg>
+            <span class="dropzone__text" id="dropzone-text">Glisse ton PDF ici</span>
+            <span class="dropzone__hint" id="dropzone-hint">ou clique pour ouvrir l'explorateur de fichiers</span>
+          </label>
+          <p class="upload__error hidden" id="upload-error" role="alert"></p>
+
+          <div class="field">
+            <label for="upload-faculte">Faculté</label>
+            <select id="upload-faculte" required></select>
+          </div>
+          <div class="field">
+            <label for="upload-semestre">Semestre</label>
+            <select id="upload-semestre" required></select>
+          </div>
+          <div class="field">
+            <label for="upload-matiere">Matière</label>
+            <select id="upload-matiere" required></select>
+          </div>
+          <div class="field">
+            <label for="upload-titre">Titre</label>
+            <!-- 60 caractères au plus : le titre tient sur 2 lignes dans la liste des documents -->
+            <input type="text" id="upload-titre" maxlength="60" placeholder="Ex. : Résumé du chapitre 3"
+                   aria-describedby="upload-titre-compteur" required>
+            <span class="field__counter" id="upload-titre-compteur">0 / 60</span>
+          </div>
+
+          <button class="btn upload__submit" id="upload-submit" type="submit" disabled>Ajouter le document</button>
+          <p class="upload__success hidden" id="upload-success" role="status"></p>
+        </form>
+      </section>
+
+      <!-- Onglet Café : la tasse se remplit avec l'XP ; pleine, elle donne un QR-code (factice) -->
+      <section class="view hidden" id="view-cafe" data-view="cafe">
+        <!-- La pièce en fond ; la tasse est posée sur l'ombre de la table,
+             les textes sont sur des panneaux opaques pour rester lisibles -->
+        <div class="cafe">
+          <div class="cafe__toolbar">
+            <button class="btn btn--icon perso-btn" type="button" data-onglet="cafe">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+              </svg>
+              Personnalisation
+            </button>
+            <button class="btn admin-only" id="cafe-admin-btn" type="button">Admin · modifier l'XP</button>
+          </div>
+
+          <button class="cup" id="cup" type="button" disabled aria-label="Tasse de café">
+            <span class="cup__stage" aria-hidden="true">
+              <img class="cup__layer cup__coffee" id="cup-liquid" src="images/assets/04_cafe/cafe.webp" alt="">
+              <img class="cup__layer" src="images/assets/04_cafe/tasse.webp" alt="">
+              <img class="cup__layer cup__steam" src="images/assets/04_cafe/fumee.webp" alt="">
+            </span>
+          </button>
+
+          <div class="cafe__panneau">
+            <p class="cafe__xp"><span id="xp-value">0</span> / <span id="xp-max">1000</span> XP</p>
+            <div class="xp-bar" aria-hidden="true"><div class="xp-bar__fill" id="xp-bar-fill"></div></div>
+            <p class="cafe__hint" id="cafe-hint"></p>
+            <p class="cafe__message hidden" id="cafe-message" role="status"></p>
+          </div>
+        </div>
+
+        <!-- Admin : changer la quantité d'XP -->
+        <dialog class="modal" id="admin-dialog">
+          <form method="dialog">
+            <h2>Modifier l'XP (admin)</h2>
+            <label class="modal__label" for="admin-xp">XP actuel (0 – 1000)</label>
+            <div class="admin-xp">
+              <input type="range" id="admin-xp-range" min="0" max="1000" step="1">
+              <input type="number" id="admin-xp" min="0" max="1000" step="1">
+            </div>
+            <div class="modal__actions">
+              <button class="btn" value="cancel" formnovalidate>Annuler</button>
+              <button class="btn btn--primary" value="save">Enregistrer</button>
+            </div>
+          </form>
+        </dialog>
+
+        <!-- Confirmation avant de réclamer la récompense -->
+        <dialog class="modal" id="confirm-dialog">
+          <form method="dialog">
+            <h2>Réclamer ta récompense</h2>
+            <p>Vous vous apprêtez à réclamer une récompense sous forme de QR-code disponible durant 10 minutes, elle ne sera ensuite plus disponible.</p>
+            <p><strong>Continuer ?</strong></p>
+            <div class="modal__actions">
+              <button class="btn" value="cancel">Annuler</button>
+              <button class="btn btn--primary" value="ok">Continuer</button>
+            </div>
+          </form>
+        </dialog>
+
+        <!-- QR-code factice, valable 10 minutes -->
+        <dialog class="modal" id="qr-dialog">
+          <h2>Ton café offert</h2>
+          <p>Présente ce QR-code à la machine à café.</p>
+          <div class="qr" id="qr"></div>
+          <p class="qr__code" id="qr-code"></p>
+          <p class="qr__timer">Expire dans <strong id="qr-timer">10:00</strong></p>
+          <div class="modal__actions">
+            <button class="btn" id="qr-close" type="button">Fermer</button>
+            <button class="btn btn--primary" id="qr-scan" type="button">Simuler le scan</button>
+          </div>
+        </dialog>
+      </section>
+
+      <!-- Onglet Profil : photo + cadre de niveau, badge, progression, résumés postés -->
+      <section class="view hidden" id="view-profil" data-view="profil">
+        <div class="profil">
+          <div class="toolbar">
+            <button class="btn btn--icon perso-btn" type="button" data-onglet="profil">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+              </svg>
+              Personnalisation
+            </button>
+            <button class="btn admin-only" id="profil-admin-btn" type="button">Admin · modifier l'XP</button>
+          </div>
+
+          <div class="profil__header">
+            <div class="avatar" id="profil-avatar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+              </svg>
+            </div>
+            <div class="profil__badge" id="profil-badge"></div>
+            <h2 class="profil__pseudo" id="profil-pseudo"></h2>
+
+            <div class="profil__level">
+              <p class="profil__level-text" id="profil-level-text"></p>
+              <div class="xp-bar" aria-hidden="true"><div class="xp-bar__fill" id="profil-xp-fill"></div></div>
+              <p class="profil__hint">Chaque note reçue sur tes résumés te rapporte de l'XP : de 1 XP (½ étoile) à 10 XP (5 étoiles).</p>
+            </div>
+
+            <!-- Certification : assez de notes reçues ET moins de 15 % de notes sous 4 étoiles -->
+            <p class="profil__certif" id="profil-certif"></p>
+
+            <ul class="profil__stats">
+              <li><strong id="stat-ajoutes">0</strong> documents ajoutés</li>
+              <li><strong id="stat-favoris">0</strong> résumés en favoris</li>
+            </ul>
+          </div>
+
+          <!-- Menu déroulant des résumés postés, avec recherche -->
+          <details class="my-docs-panel" open>
+            <summary class="my-docs-panel__summary">
+              <svg class="my-docs-panel__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+              Mes résumés
+              <span class="my-docs-panel__count" id="my-docs-count">0</span>
+            </summary>
+
+            <input class="my-docs-search" type="search" id="my-docs-search"
+                   placeholder="Rechercher dans mes résumés…" aria-label="Rechercher dans mes résumés">
+            <ul class="my-docs" id="my-docs"></ul>
+            <p class="profil__empty hidden" id="my-docs-no-match"></p>
+            <p class="profil__empty hidden" id="my-docs-empty">
+              Tu n'as encore posté aucun résumé. <a href="#ajouter">Ajouter un document</a>
+            </p>
+          </details>
+        </div>
+
+        <!-- Admin : changer l'XP du profil (pour tester les niveaux) -->
+        <dialog class="modal" id="profil-admin-dialog">
+          <form method="dialog">
+            <h2>Modifier l'XP du profil (admin)</h2>
+            <label class="modal__label" for="profil-admin-xp">XP total (0 – 3000)</label>
+            <div class="admin-xp">
+              <input type="range" id="profil-admin-range" min="0" max="3000" step="10">
+              <input type="number" id="profil-admin-xp" min="0" max="3000" step="1">
+            </div>
+
+            <!-- Pour tester la certification : 100 notes minimum, moins de 15 % sous 4 étoiles -->
+            <div class="admin-notes">
+              <label>
+                <span class="modal__label">Notes reçues</span>
+                <input class="modal__input" type="number" id="profil-admin-notes" min="0" max="5000" step="1">
+              </label>
+              <label>
+                <span class="modal__label">dont sous 4 étoiles</span>
+                <input class="modal__input" type="number" id="profil-admin-basses" min="0" max="5000" step="1">
+              </label>
+            </div>
+            <div class="modal__actions">
+              <button class="btn" value="cancel" formnovalidate>Annuler</button>
+              <button class="btn btn--primary" value="save">Enregistrer</button>
+            </div>
+          </form>
+        </dialog>
+
+        <!-- Confirmation avant de retirer un résumé -->
+        <dialog class="modal" id="remove-dialog">
+          <form method="dialog">
+            <h2>Retirer ce résumé ?</h2>
+            <p>« <span id="remove-titre"></span> » ne sera plus visible par les autres étudiants. L'XP déjà gagné reste acquis.</p>
+            <div class="modal__actions">
+              <button class="btn" value="cancel">Annuler</button>
+              <button class="btn btn--danger" value="remove">Retirer</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+
+      <!-- Ajouter un résumé aux favoris : il faut choisir une catégorie existante ou en créer une.
+           En dehors des onglets : elle s'ouvre depuis l'Accueil comme depuis les Favoris
+           (dans un onglet masqué, elle serait invisible tout en bloquant la page). -->
+      <dialog class="modal" id="fav-dialog">
+        <form id="fav-form" novalidate>
+          <h2 id="fav-dialog-titre">Ajouter aux favoris</h2>
+          <p class="fav-dialog__doc" id="fav-dialog-doc"></p>
+
+          <fieldset class="fav-choix" id="fav-choix">
+            <legend class="modal__label">Ranger dans la catégorie</legend>
+            <div class="fav-categories" id="fav-categories"></div>
+          </fieldset>
+
+          <div class="fav-new hidden" id="fav-new">
+            <label class="modal__label" for="fav-new-nom">Nom de la catégorie</label>
+            <input class="modal__input" type="text" id="fav-new-nom" maxlength="30" placeholder="Ex. : Examens de janvier">
+            <span class="modal__label fav-new__couleur-label" id="fav-couleur-label">Couleur</span>
+            <div class="color-choices" role="radiogroup" aria-labelledby="fav-couleur-label">
+              <label class="color-choice" style="--swatch: #ff0000"><input type="radio" name="fav-couleur" value="rouge"><span>Rouge</span></label>
+              <label class="color-choice" style="--swatch: #ffb900"><input type="radio" name="fav-couleur" value="jaune"><span>Jaune</span></label>
+              <label class="color-choice" style="--swatch: #0099ff"><input type="radio" name="fav-couleur" value="bleu" checked><span>Bleu</span></label>
+              <label class="color-choice" style="--swatch: #66cc33"><input type="radio" name="fav-couleur" value="vert"><span>Vert</span></label>
+              <label class="color-choice" style="--swatch: #ff7f00"><input type="radio" name="fav-couleur" value="orange"><span>Orange</span></label>
+              <label class="color-choice" style="--swatch: #3a3a40"><input type="radio" name="fav-couleur" value="noir"><span>Noir</span></label>
+              <label class="color-choice" style="--swatch: #f0509c"><input type="radio" name="fav-couleur" value="rose"><span>Rose</span></label>
+              <label class="color-choice" style="--swatch: #8e44d6"><input type="radio" name="fav-couleur" value="violet"><span>Violet</span></label>
+            </div>
+          </div>
+
+          <p class="upload__error hidden" id="fav-error" role="alert"></p>
+          <div class="modal__actions">
+            <button class="btn" type="submit" value="cancel">Annuler</button>
+            <button class="btn btn--primary" type="submit" value="ok" id="fav-submit">Ajouter</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- Lecteur de résumé : occupe tout l'écran à droite du menu. Lecture seule :
+           les pages sont dessinées dans le site (pas de barre d'outils, ni téléchargement ni impression). -->
+      <section class="lecteur hidden" id="lecteur" role="region" aria-labelledby="lecteur-titre">
+        <header class="lecteur__barre">
+          <div class="lecteur__infos">
+            <h2 id="lecteur-titre"></h2>
+            <p class="lecteur__auteur" id="lecteur-auteur"></p>
+          </div>
+          <div class="lecteur__note">
+            <span>Ta note</span>
+            <span id="lecteur-etoiles"></span>
+          </div>
+          <button class="lecteur__fermer" id="lecteur-fermer" type="button" aria-label="Fermer le résumé">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </header>
+        <div class="lecteur__pages" id="lecteur-pages" aria-label="Pages du résumé"></div>
+      </section>
+
+      <!-- Notification 10 minutes après l'ouverture d'un résumé pas encore noté -->
+      <div class="rappel hidden" id="rappel" role="status">
+        <button class="rappel__fermer" id="rappel-fermer" type="button" aria-label="Plus tard">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <p class="rappel__titre">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg>
+          Alors, ce résumé ?
+        </p>
+        <p class="rappel__texte">Tu as ouvert <span id="rappel-doc"></span> il y a 10 minutes. Note-le pour aider les autres étudiants.</p>
+        <span id="rappel-etoiles"></span>
+      </div>
+
+      <!-- En dehors des onglets : elle s'ouvre depuis Favoris, Café et Profil.
+           Personnalisation : paramètres à gauche, choix à droite. Les paramètres dépendent de l'onglet
+           (data-onglet) : Favoris → bibliothèque ; Profil → thème, pseudo, photo ; Café → rien pour l'instant. -->
+      <dialog class="modal modal--wide" id="perso-dialog">
+        <div class="perso__header">
+          <h2>Personnalisation</h2>
+          <!-- Les coins ne sont visibles qu'ici ; un clic affiche l'explication -->
+          <button class="coins" id="coins-btn" type="button" aria-expanded="false" aria-controls="coins-info">
+            <span class="coin" aria-hidden="true">R</span>
+            <span id="coins-amount">0</span>
+            <span class="visually-hidden">coins</span>
+          </button>
+        </div>
+        <div class="coins-info hidden" id="coins-info">
+          <p>Gagne de l'XP pour avoir des coins : chaque tranche de 10 XP gagnée te rapporte 1 coin. Ils te serviront à acheter des thèmes.</p>
+          <div class="coins-info__admin">
+            <button class="btn admin-only" id="coins-admin-btn" type="button">Admin · modifier les coins</button>
+            <button class="btn admin-only" id="coins-illimites-btn" type="button" aria-pressed="false">Admin · pièces illimitées</button>
+          </div>
+        </div>
+
+        <div class="perso">
+          <nav class="perso__tabs" aria-label="Paramètres">
+            <button class="perso__tab" type="button" data-panel="perso-theme" data-onglet="profil" aria-expanded="false" aria-controls="perso-theme">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3a9 9 0 1 0 0 18c1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.5-1.1-.3-.3-.5-.7-.5-1.1 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4.2-4-7.6-9-7.6z"/>
+                <circle cx="7.5" cy="11.5" r="1"/><circle cx="10" cy="7.5" r="1"/><circle cx="15" cy="7.5" r="1"/>
+              </svg>
+              Thème
+              <svg class="perso__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <button class="perso__tab" type="button" data-panel="perso-bibliotheque" data-onglet="favoris matieres" aria-expanded="false" aria-controls="perso-bibliotheque">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 3h16v18H4zM4 9h16M4 15h16M8 6v0M8 12v0"/>
+              </svg>
+              Bibliothèque
+              <svg class="perso__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <button class="perso__tab" type="button" data-panel="perso-pseudo" data-onglet="profil" aria-expanded="false" aria-controls="perso-pseudo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
+              Pseudo
+              <svg class="perso__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <button class="perso__tab" type="button" data-panel="perso-photo" data-onglet="profil" aria-expanded="false" aria-controls="perso-photo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+              Photo de profil
+              <svg class="perso__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </nav>
+
+          <div class="perso__panel">
+            <p class="perso__placeholder" id="perso-placeholder">Choisis un paramètre dans la liste.</p>
+
+            <div class="hidden" id="perso-theme">
+              <h3>Thème</h3>
+              <div class="theme-list" role="radiogroup" aria-label="Thème">
+                <button class="theme-option" type="button" role="radio" data-reglage="theme" data-valeur="light" aria-checked="true">
+                  <span class="theme-preview theme-preview--light" aria-hidden="true">
+                    <span class="theme-preview__nav"></span><span class="theme-preview__card"></span>
+                  </span>
+                  <span class="theme-option__label">Clair</span>
+                </button>
+                <button class="theme-option" type="button" role="radio" data-reglage="theme" data-valeur="dark" aria-checked="false">
+                  <span class="theme-preview theme-preview--dark" aria-hidden="true">
+                    <span class="theme-preview__nav"></span><span class="theme-preview__card"></span>
+                  </span>
+                  <span class="theme-option__label">Sombre</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="hidden" id="perso-bibliotheque">
+              <h3>Bibliothèque</h3>
+              <div class="theme-list" role="radiogroup" aria-label="Bibliothèque">
+                <button class="theme-option" type="button" role="radio" data-reglage="bibliotheque" data-valeur="clair" aria-checked="true">
+                  <img class="shelf-preview" src="images/assets/02_matiere/shelfes/bibliotheque-vide-clair.webp" alt="">
+                  <span class="theme-option__label">Claire</span>
+                </button>
+                <button class="theme-option" type="button" role="radio" data-reglage="bibliotheque" data-valeur="sombre" aria-checked="false">
+                  <img class="shelf-preview" src="images/assets/02_matiere/shelfes/bibliotheque-vide-noyer.webp" alt="">
+                  <span class="theme-option__label">Sombre</span>
+                </button>
+              </div>
+              <button class="btn btn--icon deco-ouvrir" id="deco-btn" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.3 5.8.5-4.4 3.8 1.3 5.6L12 15.3 7.1 18.2l1.3-5.6L4 8.8l5.8-.5z"/></svg>
+                Décorer la bibliothèque
+              </button>
+            </div>
+
+            <form class="hidden" id="perso-pseudo" novalidate>
+              <h3>Pseudo</h3>
+              <label class="modal__label" for="pseudo-input">Ton pseudo, visible par les autres étudiants</label>
+              <div class="pseudo-champ">
+                <input class="modal__input" type="text" id="pseudo-input" maxlength="20" autocomplete="off" spellcheck="false">
+                <button class="btn btn--primary" type="submit">Enregistrer</button>
+              </div>
+              <p class="pseudo-aide">3 à 20 caractères : lettres, chiffres, point, tiret ou _.</p>
+              <p class="upload__error hidden" id="pseudo-erreur" role="alert"></p>
+              <p class="pseudo-ok hidden" id="pseudo-ok" role="status">Pseudo enregistré.</p>
+            </form>
+
+            <div class="hidden" id="perso-photo">
+              <h3>Photo de profil</h3>
+              <div class="pfp-grid" id="pfp-grid" role="radiogroup" aria-label="Photo de profil"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal__actions">
+          <button class="btn btn--primary" id="perso-close" type="button">Fermer</button>
+        </div>
+      </dialog>
+
+      <!-- Admin : changer le nombre de coins -->
+      <dialog class="modal" id="coins-admin-dialog">
+        <form method="dialog">
+          <h2>Modifier les coins (admin)</h2>
+          <label class="modal__label" for="coins-admin-input">Nombre de coins</label>
+          <input class="modal__input" type="number" id="coins-admin-input" min="0" max="99999" step="1">
+          <div class="modal__actions">
+            <button class="btn" value="cancel" formnovalidate>Annuler</button>
+            <button class="btn btn--primary" value="save">Enregistrer</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+  </div>
+
+  <!-- PDF.js : dessine les pages des résumés dans le lecteur du site -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Les faux PDF intégrés, pour que le lecteur marche aussi en ouvrant index.html directement -->
+  <script src="js/faux-pdf.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

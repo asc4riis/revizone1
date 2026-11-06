@@ -1795,8 +1795,8 @@ function initPersonnalisation() {
   });
 }
 
-// Mode admin : appuyer en même temps sur A, D, M et N (ou toucher 5 fois de suite le compteur
-// de pièces) affiche ou recache les boutons d'administration.
+// Mode admin : appuyer en même temps sur A, D, M et N (ou toucher 5 fois de suite l'explication
+// des pièces) affiche ou recache les boutons d'administration.
 // Rien n'est retenu : au rechargement, ils sont de nouveau cachés.
 function initModeAdmin() {
   const COMBO = ["a", "d", "m", "n"];
@@ -1813,11 +1813,11 @@ function initModeAdmin() {
   document.addEventListener("keyup", (e) => enfoncees.delete(e.key.toLowerCase()));
   window.addEventListener("blur", () => enfoncees.clear());
 
-  // Sans clavier (téléphone) : 5 touches rapides sur le compteur de pièces (Personnalisation)
+  // Sans clavier (téléphone) : 5 touches rapides sur l'explication des pièces (Personnalisation)
   const TOUCHES = 5;
   const DELAI_MS = 2000; // les 5 touches doivent tenir dans ce délai
   let touches = [];
-  document.getElementById("coins-btn").addEventListener("click", () => {
+  document.querySelector("#coins-info p").addEventListener("click", () => {
     const maintenant = Date.now();
     touches = [...touches.filter((t) => maintenant - t < DELAI_MS), maintenant];
     if (touches.length >= TOUCHES) {

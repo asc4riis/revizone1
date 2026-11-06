@@ -303,6 +303,49 @@ button {
   opacity: 1;
 }
 
+/* Liste des facultés sous la carte : seulement sur téléphone (voir la version mobile) */
+.fac-liste {
+  display: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fac-liste__lien {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 2px solid var(--color-border);
+  border-left: 6px solid var(--fac-color);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+  font-weight: 600;
+}
+
+.fac-liste__logo {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+
+.fac-liste__nom {
+  flex: 1;
+  line-height: 1.25;
+}
+
+.fac-liste__chevron {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--fac-color);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* --- Semestres d'une faculté (couloir avec une porte par semestre) --- */
 .semestres {
   --fac-color: var(--color-primary);
@@ -2550,4 +2593,341 @@ button {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Écran moyen (tablette, petit ordinateur) : la scène du Café est trop basse pour que
+   le panneau tienne sous la tasse ; il passe sous la scène */
+@media (max-width: 1100px) {
+  .cafe {
+    overflow: visible;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .cafe__panneau {
+    top: 100%;
+    bottom: auto;
+    left: 0;
+    width: 100%;
+    border-radius: 0 0 var(--radius) var(--radius);
+    transform: none;
+  }
+
+  .view[data-view="cafe"] {
+    padding-bottom: 9rem; /* place pour le panneau sous la scène */
+  }
+}
+
+/* Jusqu'à 940 px (tablette, téléphone) : la page de livre est trop étroite pour la ligne
+   « titre | auteur » + « étoiles | signet nommé » ; on la compacte */
+@media (max-width: 940px) {
+  /* --- Liste des résumés sur la page de livre ---
+     Marges réduites : juste à l'intérieur du cadre de la page et avant le marque-page */
+  .book-page {
+    padding: 8% 10.5% 10% 6%;
+  }
+
+  .book-page--miroir {
+    padding: 8% 6% 10% 10.5%;
+  }
+
+  .doc {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.35rem 0.5rem;
+    padding: 0.55rem 0.1rem;
+  }
+
+  .doc__title-texte {
+    font-size: 0.98rem;
+  }
+
+  .doc__author {
+    max-width: 8.5rem;
+    column-gap: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .doc__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .rating {
+    gap: 0.3rem;
+  }
+
+  .rating__avg {
+    flex: none;
+    min-width: 0;
+    font-size: 1rem;
+  }
+
+  .doc .stars {
+    flex: none;
+  }
+
+  .rating__count {
+    font-size: 0.8rem;
+  }
+
+  .doc .star {
+    width: 25px;
+    height: 25px;
+  }
+
+  /* Le signet seul (sa couleur indique la catégorie) */
+  .doc__fav {
+    justify-self: end;
+    padding: 0.2rem;
+  }
+
+  .doc__fav-label {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Version mobile (téléphone, jusqu'à 760 px de large)
+   Le menu passe en barre fixe en bas de l'écran ; le contenu prend toute la largeur.
+   ========================================================================== */
+@media (max-width: 760px) {
+  :root {
+    --nav-height: calc(62px + env(safe-area-inset-bottom));
+  }
+
+  .app {
+    display: block;
+  }
+
+  .main-content {
+    padding: 1rem 1rem calc(var(--nav-height) + 1.25rem);
+  }
+
+  /* --- Barre de navigation en bas --- */
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+    width: auto;
+    height: var(--nav-height);
+    padding: 0.35rem 0.25rem env(safe-area-inset-bottom);
+    border-right: 0;
+    border-top: 2px solid var(--color-border);
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .nav__logo {
+    display: none;
+  }
+
+  .nav__item {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.3rem 0.1rem;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+
+  .nav__item:hover {
+    background: none;
+  }
+
+  /* Onglet actif : pastille violette derrière l'icône, texte en violet */
+  .nav__item--active {
+    background: none;
+    color: var(--color-primary);
+  }
+
+  .nav__item--active .nav__icon {
+    box-sizing: content-box;
+    padding: 3px 14px;
+    border-radius: 999px;
+    background: var(--color-strong);
+    color: #fff;
+  }
+
+  .nav__item--active .nav__label {
+    color: var(--color-secondary);
+  }
+
+  /* --- Accueil : carte + liste des facultés --- */
+  .campus-map {
+    margin-top: 0;
+  }
+
+  .fac-liste {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  /* Semestres : photo plus haute, pour que les boutons ne la recouvrent pas entièrement */
+  .semestres__title {
+    font-size: 1.25rem;
+  }
+
+  .semestres__logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fac-photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .fac-photo__semestres {
+    gap: 2cqi;
+    padding: 30cqi 3cqi 4cqi;
+  }
+
+  .annee {
+    gap: 2.5cqi;
+  }
+
+  .semestre-btn {
+    padding: 0.6em 0.4em;
+    font-size: clamp(0.78rem, 3.7cqi, 1rem);
+  }
+
+  /* Titres de page un peu plus petits */
+  .matieres__title,
+  .documents__title,
+  .favoris__titre {
+    font-size: 1.25rem;
+  }
+
+  .matieres__title {
+    margin-bottom: 1rem;
+  }
+
+  /* Bouton Personnalisation réduit à son icône (le texte reste lu par les lecteurs d'écran) */
+  .perso-btn {
+    padding: 0.55rem;
+    font-size: 0;
+  }
+
+  .perso-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* --- Favoris --- */
+  .fav-shelf__row .shelf__label {
+    max-width: 54%;
+  }
+
+  /* --- Café : scène en portrait, recadrée sur la table ---
+     La pièce occupe toute la hauteur (largeur = 1,6 × hauteur = 2,13 × la largeur du cadre),
+     centrée sur l'ombre. L'ombre fait alors 42,7 % de la largeur → tasse à 61 % ;
+     sa hauteur relative est inchangée, donc le haut reste à 31,5 %. */
+  .cafe {
+    aspect-ratio: 3 / 4;
+    background-position: 49.5% 0;
+    background-size: auto 100%;
+  }
+
+  .cup {
+    left: 19%;
+    width: 61%;
+  }
+
+  .cafe__toolbar {
+    top: 0.6rem;
+    right: 0.6rem;
+  }
+
+  .cafe__xp {
+    font-size: 1.5rem;
+  }
+
+  /* --- Fenêtres --- */
+  .modal {
+    width: calc(100% - 1.5rem);
+    padding: 1.25rem 1rem;
+  }
+
+  .modal__actions {
+    flex-wrap: wrap;
+  }
+
+  /* Personnalisation (Profil) : les paramètres en onglets horizontaux au-dessus du contenu */
+  .perso {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    min-height: 0;
+  }
+
+  .perso__tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0 0 0.6rem;
+    border-right: 0;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .perso__tab {
+    width: auto;
+    flex: none;
+    padding: 0.5rem 0.65rem;
+    white-space: nowrap;
+  }
+
+  .perso__tab .perso__chevron {
+    display: none;
+  }
+
+  .pseudo-champ {
+    flex-wrap: wrap;
+  }
+
+  /* --- Lecteur de résumé : tout l'écran au-dessus de la barre du bas --- */
+  .lecteur {
+    inset: 0 0 var(--nav-height) 0;
+  }
+
+  /* Titre et auteur sur la 1re ligne (la croix en haut à droite), les étoiles sur la 2e */
+  .lecteur__barre {
+    position: relative;
+    gap: 0.5rem 0.75rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .lecteur__infos {
+    flex-basis: calc(100% - 52px);
+    min-width: 0;
+  }
+
+  .lecteur__infos h2 {
+    font-size: 1.05rem;
+  }
+
+  .lecteur__fermer {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.75rem;
+  }
+
+  .lecteur__note {
+    font-size: 0.9rem;
+  }
+
+  .lecteur__pages {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  /* --- Notification « note ce résumé » : au-dessus de la barre du bas --- */
+  .rappel {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: calc(var(--nav-height) + 0.75rem);
+    width: auto;
+  }
 }

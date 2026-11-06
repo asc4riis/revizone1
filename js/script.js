@@ -76,6 +76,21 @@ function renderCampusMap() {
     lens.append(disc, label);
     map.appendChild(lens);
   });
+
+  // Sur téléphone, la carte est petite et le survol n'existe pas :
+  // la liste des facultés sous la carte donne leur nom (cachée en version web)
+  const liste = document.getElementById("fac-liste");
+  FACULTES.forEach((f) => {
+    const item = document.createElement("li");
+    item.innerHTML = `<a class="fac-liste__lien" href="#accueil/${f.id}">
+      <img class="fac-liste__logo" src="${f.logo}" alt="">
+      <span class="fac-liste__nom"></span>
+      <svg class="fac-liste__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </a>`;
+    item.querySelector(".fac-liste__nom").textContent = f.nom;
+    item.firstElementChild.style.setProperty("--fac-color", f.color);
+    liste.appendChild(item);
+  });
 }
 
 // Matières (provisoires, les mêmes pour toutes les facultés et tous les semestres).
@@ -1068,6 +1083,7 @@ function showAccueil(faculteId, semestre, matiere) {
   const documents = document.getElementById("accueil-documents");
 
   document.getElementById("campus-map").classList.toggle("hidden", !!faculte);
+  document.getElementById("fac-liste").classList.toggle("hidden", !!faculte);
   semestres.classList.toggle("hidden", !faculte || semestreValide);
   matieres.classList.toggle("hidden", !showMatieres);
   documents.classList.toggle("hidden", !showDocuments);
@@ -1165,8 +1181,15 @@ function initAjouter() {
     fichier = file;
     dropzone.classList.add("dropzone--filled");
     dropText.textContent = file.name;
-    dropHint.textContent = `${formatSize(file.size)} · clique ou glisse un autre PDF pour le remplacer`;
+    dropHint.textContent = tactile()
+      ? `${formatSize(file.size)} · touche pour choisir un autre PDF`
+      : `${formatSize(file.size)} · clique ou glisse un autre PDF pour le remplacer`;
     updateSubmit();
+  }
+
+  // Sur un écran tactile (téléphone), on ne glisse pas de fichier : on touche la zone
+  function tactile() {
+    return matchMedia("(hover: none)").matches;
   }
 
   function resetForm() {
@@ -1174,8 +1197,8 @@ function initAjouter() {
     majCompteur();
     fichier = null;
     dropzone.classList.remove("dropzone--filled");
-    dropText.textContent = "Glisse ton PDF ici";
-    dropHint.textContent = "ou clique pour ouvrir l'explorateur de fichiers";
+    dropText.textContent = tactile() ? "Choisis ton PDF" : "Glisse ton PDF ici";
+    dropHint.textContent = tactile() ? "touche ici pour ouvrir tes fichiers" : "ou clique pour ouvrir l'explorateur de fichiers";
     updateSubmit();
   }
 
@@ -1225,6 +1248,8 @@ function initAjouter() {
     successBox.textContent = `« ${nom} » a été ajouté à ton profil (démo : le fichier n'est envoyé nulle part).`;
     successBox.classList.remove("hidden");
   });
+
+  resetForm(); // textes de la zone de dépôt adaptés à l'écran (tactile ou non)
 }
 
 // Onglet Café : la tasse se remplit avec l'XP. Pleine, elle donne un QR-code factice
@@ -1770,8 +1795,9 @@ function initPersonnalisation() {
   });
 }
 
-// Mode admin : appuyer en même temps sur A, D, M et N affiche (ou recache) les boutons
-// d'administration. Rien n'est retenu : au rechargement, ils sont de nouveau cachés.
+// Mode admin : appuyer en même temps sur A, D, M et N (ou toucher 5 fois de suite le compteur
+// de pièces) affiche ou recache les boutons d'administration.
+// Rien n'est retenu : au rechargement, ils sont de nouveau cachés.
 function initModeAdmin() {
   const COMBO = ["a", "d", "m", "n"];
   const enfoncees = new Set();
@@ -1786,6 +1812,19 @@ function initModeAdmin() {
   });
   document.addEventListener("keyup", (e) => enfoncees.delete(e.key.toLowerCase()));
   window.addEventListener("blur", () => enfoncees.clear());
+
+  // Sans clavier (téléphone) : 5 touches rapides sur le compteur de pièces (Personnalisation)
+  const TOUCHES = 5;
+  const DELAI_MS = 2000; // les 5 touches doivent tenir dans ce délai
+  let touches = [];
+  document.getElementById("coins-btn").addEventListener("click", () => {
+    const maintenant = Date.now();
+    touches = [...touches.filter((t) => maintenant - t < DELAI_MS), maintenant];
+    if (touches.length >= TOUCHES) {
+      document.documentElement.classList.toggle("mode-admin");
+      touches = [];
+    }
+  });
 }
 
 function route() {
